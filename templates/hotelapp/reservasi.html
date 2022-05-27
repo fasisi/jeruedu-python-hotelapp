@@ -1,0 +1,76 @@
+<html>
+
+    <head>
+        <title>Hotel App - Reservasi</title>
+
+        <!-- jquery -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <!-- jqueryui -->
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+        <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+
+        <link rel="stylesheet" href="/static/bootstrap/bootstrap.min.css">
+        <script src="/static/bootstrap/bootstrap.bundle.min.js"></script>
+
+        <!-- datatables -->
+        <link rel="stylesheet" href="/static/datatables/css/jquery.dataTables.min.css">
+        <script src="/static/datatables/js/jquery.dataTables.min.js"></script>
+
+    </head>
+
+    <body>
+
+        <div class="container">
+            <div class="row mt-2 d-flex justify-content-center">
+                <div class="col-sm-8">
+
+                    <div class="row mb-2">
+                        <div class="col-sm-12">
+                            <a href="/hotelapp/reservasi/" class="btn btn-sm btn-primary mr-2">Reservasi</a>
+                            <a href="/hotelapp/rooms/" class="btn btn-sm btn-success">Room Types</a>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <table class="daftar_reservasi">
+                            <thead>
+                                <tr>
+                                    <th>Rec. id</th>
+                                    <th>Email</th>
+                                    <th>Room Type</th>
+                                    <th>Check In</th>
+                                    <th>Check Out</th>
+                                    <th>Guests</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for record in records %}
+                                    <tr>
+                                        <td>{{ record.id }}</td>
+                                        <td>{{ record.fields.Email }}</td>
+                                        <td>{{ record.fields.RoomType }}</td>
+                                        <td>{{ record.fields.CheckIn }}</td>
+                                        <td>{{ record.fields.CheckOut }}</td>
+                                        <td>{{ record.fields.Guests }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+
+        <script>
+
+            $('table.daftar_reservasi').dataTable();
+
+        </script>
+    </body>
+</html>

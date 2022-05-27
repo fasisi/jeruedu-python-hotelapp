@@ -1,0 +1,239 @@
+<html>
+
+    <head>
+        <title>Hotel App - Rooms</title>
+
+        <!-- jquery -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <!-- jqueryui -->
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+        <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+
+        <link rel="stylesheet" href="/static/bootstrap/bootstrap.min.css">
+        <script src="/static/bootstrap/bootstrap.bundle.min.js"></script>
+
+        <!-- datatables -->
+        <link rel="stylesheet" href="/static/datatables/css/jquery.dataTables.min.css">
+        <script src="/static/datatables/js/jquery.dataTables.min.js"></script>
+
+    </head>
+
+    <body>
+
+        <div class="container">
+            <div class="row mt-2 d-flex justify-content-center">
+                <div class="col-sm-8">
+
+                    <div class="row mb-2">
+                        <div class="col-sm-12">
+                            <a href="/hotelapp/reservasi/" class="btn btn-sm btn-success mr-2">Reservasi</a>
+                            <a href="/hotelapp/rooms/" class="btn btn-sm btn-primary">Room Types</a>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <table class="daftar_room table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Rec. id</th>
+                                    <th>Name</th>
+                                    <th>Image</th>
+                                    <th>Price</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for record in records %}
+                                    <tr>
+                                        <td>{{ record.id }}</td>
+                                        <td>{{ record.fields.Name }}</td>
+                                        <td> <img src="{{ record.fields.Images }}" width="200px"> </td>
+                                        <td>{{ record.fields.Price }}</td>
+                                        <td>{{ record.fields.Description }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary" onclick="HotelApp_RoomGet( '{{ record.id }}' );">Edit</button>
+                                            <button class="btn btn-sm btn-danger mt-1 ml-1" onclick="HotelApp_RoomDelete( '{{ record.id }}' );">Delete</button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="dlgRoomInfo">
+            <div class="container">
+
+                <input type="hidden" name="recordid">
+
+                <!-- name -->
+                <div clsss="row">
+                    <div class="col-sm-4">
+                        <label>Name</label>
+                    </div>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="name">
+                    </div>
+                </div>
+
+                <!-- description -->
+                <div clsss="row">
+                    <div class="col-sm-4">
+                        <label>Description</label>
+                    </div>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="description">
+                    </div>
+                </div>
+
+                <!-- images -->
+                <div clsss="row">
+                    <div class="col-sm-4">
+                        <label>Image</label>
+                    </div>
+
+                    <div class="col-sm-8">
+                        <img class="images" src="" width="100px">
+                        <input type="text" class="images">
+                    </div>
+                </div>
+
+                <!-- price -->
+                <div clsss="row">
+                    <div class="col-sm-4">
+                        <label>Price</label>
+                    </div>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="price">
+                    </div>
+                </div>
+
+                <!-- buttons -->
+                <div clsss="row">
+                    <div class="col-sm-3">
+                        <button class="btn btn-sm btn-primary" onclick="HotelApp_RoomSubmit();">Submit</button>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <button class="btn btn-sm btn-primary ml-2" onclick=" $('.dlgRoomInfo').dialog('close'); ">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+
+            $('table.daftar_room').dataTable();
+
+            $('.dlgRoomInfo').dialog({
+                autoOpen: false,
+                hide: true,
+                modal: true,
+                draggable: false,
+                resizable: false
+            });
+
+            function HotelApp_RoomGet(recordid)
+            {
+                $.ajax({
+                    url: '/hotelapp/rooms_get/',
+                    data: {
+                        recordid: recordid
+                    },
+                    method: 'POST',
+                    processData: true,
+                    dataType: 'json',
+                    error: function()
+                    {
+
+                    },
+                    success: function(data)
+                    {
+                        $('.dlgRoomInfo input[name="recordid"]').val(data.recordid);
+                        $('.dlgRoomInfo .name').val(data.name);
+                        $('.dlgRoomInfo .price').val(data.price);
+                        $('.dlgRoomInfo img.images').attr('src', data.images);
+                        $('.dlgRoomInfo .description').val(data.description);
+
+                        $('.dlgRoomInfo').dialog('open');
+                    }
+                });
+            }
+
+            function HotelApp_RoomAdd()
+            {
+                $('.dlgRoomInfo input[name="recordid"]').val(-1);
+                $('.dlgRoomInfo .name').val('');
+                $('.dlgRoomInfo .price').val('');
+                $('.dlgRoomInfo input.images').val('');
+                $('.dlgRoomInfo .description').val('');
+
+                $('.dlgRoomInfo').dialog('open');
+            }
+
+            function HotelApp_RoomSubmit()
+            {
+                $.ajax({
+                    url: '/hotelapp/rooms_submit/',
+                    data: {
+                        recordid: $('.dlgRoomInfo input[name="recordid"]').val(),
+                        name: $('.dlgRoomInfo .name').val(),
+                        images: $('.dlgRoomInfo input.images').val(),
+                        price: $('.dlgRoomInfo .price').val(),
+                        description: $('.dlgRoomInfo .description').val(),
+                    },
+                    method: 'POST',
+                    processData: true,
+                    dataType: 'json',
+                    error: function()
+                    {
+
+                    },
+                    success: function(data)
+                    {
+                        $('.dlgRoomInfo input[name="recordid"]').val(-1);
+                        $('.dlgRoomInfo .name').val('');
+                        $('.dlgRoomInfo .price').val('');
+                        $('.dlgRoomInfo .images').val('');
+                        $('.dlgRoomInfo .description').val('');
+
+                        $('.dlgRoomInfo').dialog('close');
+
+                        window.location.reload();
+                    }
+                });
+            }
+
+            function HotelApp_RoomDelete(recordid)
+            {
+                $.ajax({
+                    url: '/hotelapp/rooms_delete',
+                    data: {
+                        recordid: $('.dlgRoomInfo input[name="recordid"]').val()
+                    },
+                    processData: true,
+                    dataType: 'json',
+                    error: function()
+                    {
+
+                    },
+                    success: function(data)
+                    {
+                        window.location.reload();
+                    }
+                });
+            }
+
+        </script>
+    </body>
+</html>
